@@ -7,6 +7,12 @@ import android.os.Bundle
 import com.example.noter.firebase.service.FireBaseSyncService
 import android.app.job.JobScheduler
 import android.util.Log
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +27,13 @@ class MainActivity : AppCompatActivity() {
         jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
         startJob()
         // job end code
+
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment)
+        val navController = navHostFragment!!.findNavController()
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.first_fragment, R.id.second_fragment, R.id.third_fragment))
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        bottomNavigationView.setupWithNavController(navController)
     }
 
     private fun startJob() {
@@ -31,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             .setRequiresCharging(false)
             .setPersisted(true)
             .build()
-    
+
         if (!isJobServiceOn()) {
             if(jobScheduler.schedule(jobInfo).equals(JobScheduler.RESULT_SUCCESS)) {
                 Log.i(TAG, "startJob: Job scheduled")
